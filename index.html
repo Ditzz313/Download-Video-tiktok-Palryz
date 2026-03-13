@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TikTok Downloader</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+margin:0;
+background:linear-gradient(135deg,#0f172a,#020617);
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+.container{
+width:420px;
+background:#1e293b;
+padding:25px;
+border-radius:16px;
+box-shadow:0 10px 40px rgba(0,0,0,0.6);
+animation:fade 0.7s ease;
+text-align:center;
+}
+
+@keyframes fade{
+from{opacity:0;transform:translateY(20px)}
+to{opacity:1}
+}
+
+.logo{
+width:70px;
+margin-bottom:10px;
+border-radius:20px;
+}
+
+.creator{
+font-size:12px;
+color:#94a3b8;
+margin-bottom:10px;
+}
+
+input{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:none;
+margin-top:10px;
+font-size:15px;
+}
+
+button{
+width:100%;
+margin-top:10px;
+padding:12px;
+border:none;
+border-radius:10px;
+background:#22c55e;
+color:white;
+font-size:16px;
+cursor:pointer;
+transition:0.2s;
+}
+
+button:hover{
+transform:scale(1.03);
+background:#16a34a;
+}
+
+.loader{
+margin:15px auto;
+border:4px solid #334155;
+border-top:4px solid #22c55e;
+border-radius:50%;
+width:35px;
+height:35px;
+animation:spin 1s linear infinite;
+display:none;
+}
+
+@keyframes spin{
+100%{transform:rotate(360deg)}
+}
+
+video{
+width:100%;
+border-radius:12px;
+margin-top:15px;
+}
+
+.download a{
+display:block;
+background:#334155;
+padding:10px;
+margin-top:8px;
+border-radius:10px;
+text-decoration:none;
+color:white;
+}
+
+.download a:hover{
+background:#475569;
+}
+
+.caption{
+font-size:14px;
+margin-top:10px;
+color:#cbd5f5;
+}
+
+.gallery img{
+width:100%;
+margin-top:15px;
+border-radius:10px;
+}
+
+.photoBtn{
+display:block;
+background:#2563eb;
+padding:8px;
+margin-top:5px;
+border-radius:8px;
+text-decoration:none;
+color:white;
+font-size:14px;
+}
+
+.photoBtn:hover{
+background:#1d4ed8;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<img class="logo" src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png">
+
+<h2>TikTok Downloader</h2>
+
+<div class="creator">
+Created by Noval Aj
+</div>
+
+<input id="url" placeholder="Paste link TikTok">
+
+<button onclick="getVideo()">Download</button>
+
+<div class="loader" id="loader"></div>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+window.onload = async function(){
+
+try{
+const text = await navigator.clipboard.readText()
+
+if(text.includes("tiktok.com")){
+document.getElementById("url").value = text
+}
+}catch(e){}
+
+}
+
+async function getVideo(){
+
+let url=document.getElementById("url").value
+let loader=document.getElementById("loader")
+let result=document.getElementById("result")
+
+if(!url){
+alert("Masukkan link TikTok")
+return
+}
+
+loader.style.display="block"
+result.innerHTML=""
+
+let api="https://tikwm.com/api/?url="+encodeURIComponent(url)
+
+try{
+
+let res=await fetch(api)
+let data=await res.json()
+
+loader.style.display="none"
+
+if(!data.data){
+result.innerHTML="Video tidak ditemukan"
+return
+}
+
+let video=data.data.play
+let hd=data.data.hdplay
+let mp3=data.data.music
+let caption=data.data.title
+
+let html=""
+
+html+=`<video controls src="${video}"></video>`
+
+html+=`<div class="caption">${caption}</div>`
+
+html+=`
+<div class="download">
+<a href="${hd}" download>⬇ Download Video HD</a>
+<a href="${video}" download>⬇ Download Video Normal</a>
+<a href="${mp3}" download>⬇ Download MP3</a>
+</div>
+`
+
+if(data.data.images){
+
+html+=`<h3>Foto TikTok</h3><div class="gallery">`
+
+data.data.images.forEach(img=>{
+html+=`
+<img src="${img}">
+<a class="photoBtn" href="${img}" download>⬇ Download Foto</a>
+`
+})
+
+html+=`</div>`
+}
+
+result.innerHTML=html
+
+}catch{
+
+loader.style.display="none"
+result.innerHTML="Error mengambil video"
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
