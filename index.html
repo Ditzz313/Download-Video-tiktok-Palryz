@@ -175,6 +175,16 @@ async function getVideo(){
     <button class='btn' onclick="forceDownload('${video}','${currentTitle}.mp4')">⬇ Download VT Normal</button>
     <button class='btn' onclick="forceDownload('${mp3}','${currentTitle}.mp3')">🎵 Download MP3</button>`
 
+    /* FOTO SUPPORT */
+    if(data.data.images){
+      html+=`<h3>📸 Foto TikTok</h3>`
+      data.data.images.forEach((img,i)=>{
+        html+=`
+        <img src="${img}" style="width:100%;border-radius:12px;margin-top:10px">
+        <button class='btn' onclick="forceDownload('${img}','${currentTitle}-${i}.jpg')">⬇ Download Image ${i+1}</button>`
+      })
+    }
+
     result.innerHTML=html
 
   }catch{
